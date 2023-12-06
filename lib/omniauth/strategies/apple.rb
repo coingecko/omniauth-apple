@@ -105,7 +105,7 @@ module OmniAuth
         verify_aud!(id_token)
         verify_iat!(id_token)
         verify_exp!(id_token)
-        verify_nonce!(id_token) if id_token[:nonce_supported]
+        # verify_nonce!(id_token) if id_token[:nonce_supported]
       end
 
       def verify_iss!(id_token)

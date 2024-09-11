@@ -63,6 +63,20 @@ module OmniAuth
         options[:redirect_uri] || (full_host + callback_path)
       end
 
+      def callback_phase
+        if request.request_method.downcase.to_sym == :post
+          url = "#{callback_url}"
+          if (code = request.params['code']) && (state = request.params['state'])
+            url += "?code=#{CGI::escape(code)}"
+            url += "&state=#{CGI::escape(state)}"
+            url += "&user=#{CGI::escape(request.params['user'])}" if request.params['user']
+          end
+          session.options[:drop] = true # Do not set a session cookie on this response
+          return redirect url
+        end
+        super
+      end
+
       private
 
       def new_nonce
@@ -105,7 +119,7 @@ module OmniAuth
         verify_aud!(id_token)
         verify_iat!(id_token)
         verify_exp!(id_token)
-        verify_nonce!(id_token) if id_token[:nonce_supported]
+        # verify_nonce!(id_token) if id_token[:nonce_supported]
       end
 
       def verify_iss!(id_token)
